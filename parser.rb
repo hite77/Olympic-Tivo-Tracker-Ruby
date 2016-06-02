@@ -19,6 +19,7 @@ class Parser
         if !title.nil?
           @h[counter] = Hash.new
           @h[counter]["title"] = title
+          @h[counter]["description"] = findPieceOfString(line,"<br>","</td>")
           counter = counter + 1
         end
       end
@@ -30,7 +31,7 @@ class Parser
     if (string.index(b).nil? || string.index(e).nil?)
       result = nil
     else
-      result = string[(string.index(b)+b.bytesize)..(string.index(e)-1)]
+      result = string[(string.index(b)+b.bytesize)..(string.index(e, string.index(b))-1)]
     end
     result
   end
