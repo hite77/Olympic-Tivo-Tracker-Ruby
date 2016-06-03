@@ -5,7 +5,6 @@ class Parser
   end
 
   def parse(html_data)
-    counter = 0
     baseFolderName="https://192.168.50.146/nowplaying/"
     html_data.gsub! '&quot;', '"'
     html_data.gsub! '&amp;', '&'
@@ -15,10 +14,12 @@ class Parser
       if folder.nil?
         title = findPieceOfString(line,"<b>","</b>")
         if !title.nil?
-          @h[counter] = Hash.new
-          @h[counter]["title"] = title
-          @h[counter]["description"] = findPieceOfString(line,"<br>","</td>")
-          counter = counter + 1
+          if @h["title"].nil?
+            @h["title"] = Array.new
+            @h["description"] = Array.new
+          end
+          @h["title"] << title
+          @h["description"] << findPieceOfString(line,"<br>","</td>")
         end # if !title.nil
       else # if folder.nil
         if @h["folders"].nil?

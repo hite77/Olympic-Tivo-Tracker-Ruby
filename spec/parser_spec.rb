@@ -9,16 +9,16 @@ class TestParser < Test::Unit::TestCase
 
   def test_can_parse_titles
     data = Parser.new.parse(@testData)
-    assert_equal("After Earth", data[0]["title"])
-    assert_equal("The Simpsons: \"The Bart of War\"", data[1]["title"])
+    assert_equal("After Earth", data["title"][0])
+    assert_equal("The Simpsons: \"The Bart of War\"", data["title"][1])
   end
 
   def test_can_parse_descriptions
     firstDescription="With his father trapped in the wreckage of their spacecraft, a youth treks across Earth's now-hostile terrain to recover their rescue beacon and signal for help. Copyright Tribune Media Services, Inc."
     secondDescription="When Homer and Marge enroll Bart in an activities club, he wages war against Milhouse, who belongs to a different one. Copyright Tribune Media Services, Inc."
     data = Parser.new.parse(@testData)
-    assert_equal(firstDescription, data[0]["description"])
-    assert_equal(secondDescription, data[1]["description"])
+    assert_equal(firstDescription, data["description"][0])
+    assert_equal(secondDescription, data["description"][1])
   end
   def test_can_parse_folders
     firstFolder="https://192.168.50.146/nowplaying/TiVoConnect?Command=QueryContainer&Container=%2FNowPlaying%2F17%2F17030";
