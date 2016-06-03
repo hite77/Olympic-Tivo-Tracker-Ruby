@@ -13,13 +13,15 @@ class Parser
       folder = findPieceOfString(line,"<a href=\"","\">folder</a>")
       if folder.nil?
         title = findPieceOfString(line,"<b>","</b>")
-        if !title.nil?
+        if !title.nil? && findPieceOfString(line,"<i>","</i>") != "Recording"
           if @h["title"].nil?
             @h["title"] = Array.new
             @h["description"] = Array.new
+            @h["channels"] = Array.new
           end
           @h["title"] << title
           @h["description"] << findPieceOfString(line,"<br>","</td>")
+          @h["channels"] << findPieceOfString(line,"alt=\"","\">")
         end # if !title.nil
       else # if folder.nil
         if @h["folders"].nil?
