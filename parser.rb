@@ -1,7 +1,10 @@
+require_relative 'average.rb'
+
 class Parser
 
   def initialize
     @h = Hash.new
+    @average = Average.new
   end
 
   def parse(html_data)
@@ -22,8 +25,9 @@ class Parser
           end
           @h["title"] << title
           @h["description"] << findPieceOfString(line,"<br>","</td>")
-          @h["channels"] << findPieceOfString(line,"alt=\"","\">")
-          addSizeOfRecording(line)
+          channel =  findPieceOfString(line,"alt=\"","\">")
+          @h["channels"] << channel
+          addSizeOfRecording(line, channel)
         end # if !title.nil
       else # if folder.nil
         if @h["folders"].nil?
@@ -48,14 +52,16 @@ class Parser
     result
   end
 
-  def addSizeOfRecording(line)
+  def addSizeOfRecording(line, channel)
     center_align="<td align=\"center\" valign=\"top\" nowrap>"
     trim = line[(line.index(center_align)+center_align.bytesize)..-1]
-    date = findPieceOfString(trim,"<br>","</td>")
+    #not currently needed, may need for UI later.
+    #date = findPieceOfString(trim,"<br>","</td>")
     trim = trim[(trim.index("</td>")+"</td>".bytesize)..-1]
     time = findPieceOfString(trim,center_align,"<br>")
     trim = trim[(trim.index(time)+time.bytesize)..-1]
     size = findPieceOfString(trim,"<br>","</td>")
     @h["size"] << size
+    @average.calculate(time,size,channel)
   end
 end

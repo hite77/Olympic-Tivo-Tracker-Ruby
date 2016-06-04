@@ -1,5 +1,6 @@
 require_relative '../parser.rb'
 require "test/unit"
+require 'json'
 
 class TestParser < Test::Unit::TestCase
   
@@ -41,6 +42,13 @@ class TestParser < Test::Unit::TestCase
     data = Parser.new.parse(@testData2)
     assert_equal(["9.23 GB", "7.78 GB", "7.24 GB", "11.65 GB", "4.73 GB", "9.80 GB", "4.85 GB", "4.80 GB"], data["size"])
   end
-  # remove average file, call with testData2, make sure contents of average are correct.
-  # remove file again.
+
+  def test_calling_parse_causes_averages_to_be_calculated
+     if File.exist?("averages.json")
+       File.delete("averages.json")
+     end
+     Parser.new.parse(@testData2)
+     h = JSON.parse(File.read('averages.json'))
+     assert_equal({"FXHD"=>3.8905403528267817,"TCMHD"=>3.9213071023674564,"WCMHDT"=>5.95483870967742,"WOSUDT"=>4.807083333333333,"WTTEDT"=>5.829047949965254}, h)
+  end
 end
