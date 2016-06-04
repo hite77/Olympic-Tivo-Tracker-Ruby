@@ -36,28 +36,11 @@ class TestParser < Test::Unit::TestCase
     data = Parser.new.parse(@testData2)
     assert_equal(["WCMHDT","FXHD","WOSUDT","WTTEDT","WOSUDT","TCMHD","WOSUDT","WOSUDT"], data["channels"])
   end
+
+  def test_can_parse_size_if_not_recording
+    data = Parser.new.parse(@testData2)
+    assert_equal(["9.23 GB", "7.78 GB", "7.24 GB", "11.65 GB", "4.73 GB", "9.80 GB", "4.85 GB", "4.80 GB"], data["size"])
+  end
+  # remove average file, call with testData2, make sure contents of average are correct.
+  # remove file again.
 end
-  #  // todo: decide what is needed....
-  #  //
-
-#//    public void assertHelper(Recording recording, String date, int length, float size) {
-#//        assertThat(recording.getDate(), equalTo(date));
-#        //assertThat(recording.getTime(), equalTo(length));
-#        //assertThat(recording.getSize(), equalTo(size));
-#//    }
-
-#//    @Test
-#//    public void canParseDateLengthAndSizeIfNotRecording() {
-#//        parser parser = new parser();
-#//        parser.parse(testData2);
-#//        ArrayList<Recording> recordings = parser.getRecordings();
-#//        assertHelper(recordings.get(0),"5/15",1*60*60+33*60,(float) 9.23); //5/15 1:33:00 9.23 GB
-#//        assertHelper(recordings.get(1),"5/13",1*60*60+59*60+59,(float)7.78); // 5/13 1:59:59 7.78 GB
-#//        assertHelper(recordings.get(2),"3/22",1*60*60+30*60,(float)7.24); // 3/22 1:30:00 7.24 GB
-#//        assertHelper(recordings.get(3),"3/21",1*60*60+59*60+55,(float)11.65); //3/21 1:59:55 11.65 GB
-#//        assertHelper(recordings.get(4),"2/25",1*60*60,(float)4.73); //2/25 1:00:00 4.73 GB
-#//        assertHelper(recordings.get(5),"1/23",2*60*60+29*60+57,(float)9.80); // 1/23 2:29:57 9.80 GB
-#//        assertHelper(recordings.get(6),"1/9",1*60*60,(float)4.85); // 1/9 1:00:00 4.85 GB
-#//        assertHelper(recordings.get(7),"1/8",1*60*60,(float)4.80); // 1/8 1:00:00 4.80 GB
-#//    }
-#}

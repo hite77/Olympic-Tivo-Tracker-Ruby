@@ -18,10 +18,12 @@ class Parser
             @h["title"] = Array.new
             @h["description"] = Array.new
             @h["channels"] = Array.new
+            @h["size"] = Array.new
           end
           @h["title"] << title
           @h["description"] << findPieceOfString(line,"<br>","</td>")
           @h["channels"] << findPieceOfString(line,"alt=\"","\">")
+          addSizeOfRecording(line)
         end # if !title.nil
       else # if folder.nil
         if @h["folders"].nil?
@@ -44,5 +46,16 @@ class Parser
       result = string[(string.index(b)+b.bytesize)..(string.index(e, string.index(b))-1)]
     end
     result
+  end
+
+  def addSizeOfRecording(line)
+    center_align="<td align=\"center\" valign=\"top\" nowrap>"
+    trim = line[(line.index(center_align)+center_align.bytesize)..-1]
+    date = findPieceOfString(trim,"<br>","</td>")
+    trim = trim[(trim.index("</td>")+"</td>".bytesize)..-1]
+    time = findPieceOfString(trim,center_align,"<br>")
+    trim = trim[(trim.index(time)+time.bytesize)..-1]
+    size = findPieceOfString(trim,"<br>","</td>")
+    @h["size"] << size
   end
 end
