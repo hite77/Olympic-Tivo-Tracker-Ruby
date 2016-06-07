@@ -64,4 +64,13 @@ class TestParser < Test::Unit::TestCase
     data = Parser.new.parse(@one_recording_and_one_suggestion)
     assert_equal([1.00], data["size"])
   end
+
+  def test_can_parse_multiple_times
+    parser = Parser.new
+    parser.parse(@testData)
+    data = parser.parse(@one_recording_and_one_suggestion)
+    assert_equal("After Earth", data["title"][0])
+    assert_equal("The Simpsons: \"The Bart of War\"", data["title"][1])
+    assert_equal("Kitchen Nightmares: \"Mangia Mangia Pt. 2\"", data["title"][2])
+  end
 end
