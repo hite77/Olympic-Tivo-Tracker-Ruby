@@ -62,6 +62,11 @@ class Parser
     trim = trim[(trim.index(time)+time.bytesize)..-1]
     size = findPieceOfString(trim,"<br>","</td>")
     @average.calculate(time,size,channel)
-    @h["size"] << size.delete(" GB").to_f
+    if size["MB"]
+      size = size.to_f/1024.0
+    else
+      size = size.to_f
+    end
+    @h["size"] << size
   end
 end
