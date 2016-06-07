@@ -34,5 +34,5 @@ class Average
    end
    File.open('averages.json', 'w') { |fo| fo.puts @h.to_json }
    average
-  end
+ end
 end

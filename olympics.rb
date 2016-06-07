@@ -16,4 +16,6 @@ first_run["folders"].each { |x| puts x; data = parser.parse(`curl --digest -k "h
 
 puts data["title"]
 sizes = data["size"]
-puts sizes.inject(0.0){|sum,x| sum + x }
+total =  sizes.inject(0.0){|sum,x| sum + x }
+puts "percent no external drive"
+puts total / 911.7756348 * 100.0
