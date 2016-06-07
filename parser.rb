@@ -16,7 +16,7 @@ class Parser
       folder = findPieceOfString(line,"<a href=\"","\">folder</a>")
       if folder.nil?
         title = findPieceOfString(line,"<b>","</b>")
-        if !title.nil? && findPieceOfString(line,"<i>","</i>") != "Recording"
+        if !title.nil? && findPieceOfString(line,"<i>","</i>") != "Recording" && !line[":80/images/suggestion-recording.png"]
           if @h["title"].nil?
             @h["title"] = Array.new
             @h["description"] = Array.new
@@ -61,7 +61,7 @@ class Parser
     time = findPieceOfString(trim,center_align,"<br>")
     trim = trim[(trim.index(time)+time.bytesize)..-1]
     size = findPieceOfString(trim,"<br>","</td>")
-    @h["size"] << size
     @average.calculate(time,size,channel)
+    @h["size"] << size.delete(" GB").to_f
   end
 end

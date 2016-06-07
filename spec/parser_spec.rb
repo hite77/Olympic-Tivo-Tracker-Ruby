@@ -40,7 +40,7 @@ class TestParser < Test::Unit::TestCase
 
   def test_can_parse_size_if_not_recording
     data = Parser.new.parse(@testData2)
-    assert_equal(["9.23 GB", "7.78 GB", "7.24 GB", "11.65 GB", "4.73 GB", "9.80 GB", "4.85 GB", "4.80 GB"], data["size"])
+    assert_equal([9.23,7.78,7.24,11.65,4.73,9.80,4.85,4.80], data["size"])
   end
 
   def test_calling_parse_causes_averages_to_be_calculated
@@ -50,5 +50,14 @@ class TestParser < Test::Unit::TestCase
      Parser.new.parse(@testData2)
      h = JSON.parse(File.read('averages.json'))
      assert_equal({"FXHD"=>3.8905403528267817,"TCMHD"=>3.9213071023674564,"WCMHDT"=>5.95483870967742,"WOSUDT"=>4.807083333333333,"WTTEDT"=>5.829047949965254}, h)
+  end
+
+  def test_calling_parse_will_ignore_tivo_suggestions
+    one_recording_and_one_suggestion="<!-- Generated HTML --><html><head><title>Kitchen Nightmares</title><link rel=\"stylesheet\" href=\"http://192.168.50.146:80/style.css\" type=\"text/css\" media=\"all\"><link rel=\"alternate\" type=\"text/xml\" title=\"RSS 2.0\" href=\"http://192.168.50.146:80/rss/nowplaying.xml\"><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"></head><body><img src=\"http://192.168.50.146:80/images/tivodance.gif\" align=\"right\"><h1>Kitchen Nightmares</h1><table cellpadding=\"7\" width=\"100%\"><tr bgcolor=\"E5E5C5\"><th width=\"1%\"><th width=\"1%\">Source</th><th>Description</th><th width=\"5%\">Date</th><th width=\"5%\">Size</th><th width=\"5%\">Links</th></tr><tr bgcolor=\"F5F595\"><td align=\"center\" valign=\"top\"><img src=\"http://192.168.50.146:80/images/suggestion-recording.png\" width=\"30\" height=\"30\"></td><td align=\"center\" valign=\"top\"><img src=\"http://192.168.50.146:80/ChannelLogo/logo-65725.png\" alt=\"BBCA\"></td><td align=\"left\" valign=\"top\"><b>Kitchen Nightmares: &quot;Sam's Mediterranean Kabob Room&quot;</b><br>Ramsay travels to Sam's Mediterranean Kabob Room in Monrovia, Calif., where the owner has only been able to keep his own children on as employees. Copyright Tribune Media Services, Inc.</td><td align=\"center\" valign=\"top\" nowrap>Mon<br>4/25</td><td align=\"center\" valign=\"top\" nowrap>0:59:58<br>3.93 GB</td><td align=\"center\" valign=\"top\" nowrap><i>Protected</i></td></tr><tr bgcolor=\"F5F5B5\"><td align=\"center\" valign=\"top\"><img src=\"http://192.168.50.146:80/images/save-until-i-delete-recording.png\" width=\"30\" height=\"30\"></td><td align=\"center\" valign=\"top\"><img src=\"http://192.168.50.146:80/ChannelLogo/logo-65725.png\" alt=\"BBCAHD\"></td><td align=\"left\" valign=\"top\"><b>Kitchen Nightmares: &quot;Mangia Mangia Pt. 2&quot;</b><br>Ramsay travels to Woodland Park, Colo., to save Mangia Mangia, an Italian restaurant saddled with tension between the owner and her staff, and problems with the food, atmosphere and service. Copyright Tribune Media Services, Inc.</td><td align=\"center\" valign=\"top\" nowrap>Thu<br>4/21</td><td align=\"center\" valign=\"top\" nowrap>0:59:58<br>3.93 GB</td><td align=\"center\" valign=\"top\" nowrap><i>Protected</i></td></tr></table>2 items, <a href=\"index.html?Recurse=Yes\">classic</a>.<p><font size=\"-2\">This feature is not supported. The TiVo license agreement allows you to transfer content to up to ten devices within your household, but not outside your household.  Unauthorized transfers or distribution of copyrighted works outside of your home may constitute a copyright infringement. TiVo reserves the right to terminate the TiVo service accounts of users who transfer or distribute content in violation of this Agreement. </font></body></html>"
+    data = Parser.new.parse(one_recording_and_one_suggestion)
+    assert_equal(["Kitchen Nightmares: \"Mangia Mangia Pt. 2\""], data["title"])
+    assert_equal(["Ramsay travels to Woodland Park, Colo., to save Mangia Mangia, an Italian restaurant saddled with tension between the owner and her staff, and problems with the food, atmosphere and service. Copyright Tribune Media Services, Inc."], data["description"])
+    assert_equal(["BBCAHD"], data["channels"])
+    assert_equal([3.93], data["size"])
   end
 end
