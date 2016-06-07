@@ -8,7 +8,6 @@ class Parser
   end
 
   def parse(html_data)
-    baseFolderName="https://192.168.50.146/nowplaying/"
     html_data.gsub! '&quot;', '"'
     html_data.gsub! '&amp;', '&'
     while true do
@@ -29,11 +28,13 @@ class Parser
           @h["channels"] << channel
           addSizeOfRecording(line, channel)
         end # if !title.nil
-      else # if folder.nil
-        if @h["folders"].nil?
-          @h["folders"] = Array.new
+      else
+        if !line[":80/images/suggestions-in-progress-folder.png"]
+          if @h["folders"].nil?
+            @h["folders"] = Array.new
+          end
+          @h["folders"] << folder
         end
-        @h["folders"] << baseFolderName+folder
       end
       html_data = html_data[html_data.index("</tr>")+5..-1]
       if html_data.index("</tr>").nil?

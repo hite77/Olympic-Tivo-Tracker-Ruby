@@ -23,15 +23,24 @@ class TestParser < Test::Unit::TestCase
     assert_equal(firstDescription, data["description"][0])
     assert_equal(secondDescription, data["description"][1])
   end
+
   def test_can_parse_folders
-    firstFolder="https://192.168.50.146/nowplaying/TiVoConnect?Command=QueryContainer&Container=%2FNowPlaying%2F17%2F17030";
-    secondFolder="https://192.168.50.146/nowplaying/TiVoConnect?Command=QueryContainer&Container=%2FNowPlaying%2F17%2F279030631";
-    thirdFolder="https://192.168.50.146/nowplaying/TiVoConnect?Command=QueryContainer&Container=%2FNowPlaying%2F17%2F97868152";
+    firstFolder ="TiVoConnect?Command=QueryContainer&Container=%2FNowPlaying%2F17%2F17030"
+    secondFolder="TiVoConnect?Command=QueryContainer&Container=%2FNowPlaying%2F17%2F279030631"
+    thirdFolder ="TiVoConnect?Command=QueryContainer&Container=%2FNowPlaying%2F17%2F97868152"
     data = Parser.new.parse(@testData)
     assert_equal(3, data["folders"].length)
     assert_equal(firstFolder, data["folders"][0])
     assert_equal(secondFolder, data["folders"][1])
     assert_equal(thirdFolder, data["folders"][2]) 
+  end
+
+  def test_will_not_parse_tivo_suggestions_folder
+    only_one_valid_folder = "<!-- Generated HTML --><html><head><title>Now Playing</title><link rel=\"stylesheet\" href=\"http://192.168.50.146:80/style.css\" type=\"text/css\" media=\"all\"><link rel=\"alternate\" type=\"text/xml\" title=\"RSS 2.0\" href=\"http://192.168.50.146:80/rss/nowplaying.xml\"><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"></head><body><img src=\"http://192.168.50.146:80/images/tivodance.gif\" align=\"right\"><h1>Now Playing</h1><table cellpadding=\"7\" width=\"100%\"><tr bgcolor=\"E5E5C5\"><th width=\"1%\"><th width=\"1%\">Source</th><th>Description</th><th width=\"5%\">Date</th><th width=\"5%\">Size</th><th width=\"5%\">Links</th></tr><tr bgcolor=\"F5F5B5\"><td align=\"center\" valign=\"top\"><img src=\"http://192.168.50.146:80/images/folder.png\"></td><td><td valign=\"top\"><b>A Chef's Life</b></td><td align=\"center\" valign=\"top\" nowrap>Wed<br>2/10</td><td align=\"center\" valign=\"top\">13 items<br></td><td align=\"center\" valign=\"top\"><a href=\"TiVoConnect?Command=QueryContainer&amp;Container=%2FNowPlaying%2F17%2F279030631\">folder</a></td></tr><tr bgcolor=\"F5F595\"><td align=\"center\" valign=\"top\"><img src=\"http://192.168.50.146:80/images/suggestions-in-progress-folder.png\"></td><td><td valign=\"top\"><b>TiVo Suggestions</b></td><td align=\"center\" valign=\"top\" nowrap>Mon<br>6/6</td><td align=\"center\" valign=\"top\">104 items<br></td><td align=\"center\" valign=\"top\"><a href=\"TiVoConnect?Command=QueryContainer&amp;Container=%2FNowPlaying%2F0\">folder</a></td></tr></table>15 items, <a href=\"index.html?Recurse=Yes\">classic</a>.<p><font size=\"-2\">This feature is not supported. The TiVo license agreement allows you to transfer content to up to ten devices within your household, but not outside your household.  Unauthorized transfers or distribution of copyrighted works outside of your home may constitute a copyright infringement. TiVo reserves the right to terminate the TiVo service accounts of users who transfer or distribute content in violation of this Agreement. </font></body></html>"
+    data = Parser.new.parse(only_one_valid_folder)
+    assert_equal(1, data["folders"].length)
+    assert_equal("TiVoConnect?Command=QueryContainer&Container=%2FNowPlaying%2F17%2F279030631", data["folders"][0])
+    
   end
 
   def test_can_parse_channel
