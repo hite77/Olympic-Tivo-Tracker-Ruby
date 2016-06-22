@@ -16,7 +16,7 @@ class TestAverage < Test::Unit::TestCase
     assert_equal(2.5/3.0, Average.new.calculate("3:00:00", "2.5 GB", "RVLTHD") )
   end
 
-  def test_can_average_multiple_minues_given_gb
+  def test_can_average_multiple_minutes_given_gb
     assert_equal(3.4/(2.0+15.0/60.0), Average.new.calculate("2:15:00", "3.4 GB", "MTVLIVE") )
   end
 
@@ -40,11 +40,11 @@ class TestAverage < Test::Unit::TestCase
     assert_equal(444.0/1024.0/(2.0+53.0/60.0+26.0/3600.0), Average.new.calculate("2:53:26", "444 MB", "IFCHD"))
   end
 
-  def test_can_average_and_recall
+  def test_can_recall_latest
     averager = Average.new
     averager.calculate("1:00:00", "1.0 GB","AMCHD")
     averager.calculate("2:00:00", "1.0 GB","AMCHD")
-    assert_equal(0.75, averager.retrieve("AMCHD"))
+    assert_equal(0.5, averager.retrieve("AMCHD"))
   end
 
   def test_can_average_and_recall_for_multiple_channels

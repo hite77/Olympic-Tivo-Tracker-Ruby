@@ -27,11 +27,7 @@ class Average
      size_gb = size.delete( "MB" ).to_f/1024.0
    end
    average= size_gb/(hours+minutes/60.0+seconds/(60.0*60.0))
-   if (@h[channel] != nil)
-     @h[channel] = (@h[channel] + average)/2.0
-   else
-     @h[channel] = average   
-   end
+   @h[channel] = average
    File.open('averages.json', 'w') { |fo| fo.puts @h.to_json }
    average
  end

@@ -59,7 +59,7 @@ class TestParser < Test::Unit::TestCase
      end
      Parser.new.parse(@testData2)
      h = JSON.parse(File.read('averages.json'))
-     assert_equal({"FXHD"=>3.8905403528267817,"TCMHD"=>3.9213071023674564,"WCMHDT"=>5.95483870967742,"WOSUDT"=>4.807083333333333,"WTTEDT"=>5.829047949965254}, h)
+     assert_equal({"FXHD"=>3.8905403528267817,"TCMHD"=>3.9213071023674564,"WCMHDT"=>5.95483870967742,"WOSUDT"=>4.8,"WTTEDT"=>5.829047949965254}, h)
   end
 
   def test_calling_parse_will_ignore_tivo_suggestions
