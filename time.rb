@@ -1,23 +1,30 @@
-class Timer
 require 'time'
 require 'csv'
+require_relative 'average.rb'
 
-  def initialize
+class Timer
+
+  def calculate
     t = Time.now
     File.open('output.txt', 'w') {}
     recordings = CSV.read("test.csv", converters: :numeric)
     recordings = recordings[2..-1]
+    averager = Average.new
+    current_total = 0.0
     recordings.each { |item|
       recording_time_start = convert(item,0)
       recording_time_end = convert(item,2)
       channel = item[4]
       if t.between?(recording_time_start, recording_time_end)
         hours = (t-recording_time_start)/60/60
+        gb_per_hour = averager.retrieve(channel)
+        current_total +=  hours * gb_per_hour
         open('output.txt', 'a') { |f|
   	  f.puts "#{channel} -- Recording -- ending at #{recording_time_end}:#{hours} hours"
 	}
       end
     }
+    {"current_recording_gb" => current_total.round(2)}
   end
 
   def convert(item,start_index)

@@ -3,3 +3,5 @@ averages.json
 *.swp
 pass.txt
 output.txt
+backup_averages.json
+backup_test.csv
