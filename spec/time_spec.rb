@@ -48,7 +48,50 @@ class TestTest < Test::Unit::TestCase
     assert_equal((2.0*(4.0/60.0)).round(2), data["current_recording_gb"])
   end
 
-  ### Test that time is after all recordings, make sure it is 0
+  def test_time_after_all_recordings_current_recording_should_be_zero
+    Time.stubs(:now).returns(Time.new(2017,6,14,22,46))
+    data = Timer.new.calculate
+    assert_equal((0.0).round(2), data["current_recording_gb"])
+  end
 
-  ### Test that projected time is right, for all recordings, for some recordings (include part that has recorded so far), and that after all recordings are done, then projected is 0.
+  def test_time_before_all_recordings_projected_recordings_are_all_accounted_for
+    Time.stubs(:now).returns(Time.new(2015,6,14,22,46))
+    data = Timer.new.calculate
+    assert_equal((1.0*5.0/60.0+2.0*5.0/60.0).round(2), data["projected_recording_gb"])
+  end
+
+  def test_time_part_way_through_recording_one_projected #10:41
+    Time.stubs(:now).returns(Time.new(2016,6,14,22,41))
+    data = Timer.new.calculate
+    assert_equal((1.0*4.0/60.0+2.0*5.0/60.0).round(2), data["projected_recording_gb"])
+  end
+
+  def test_time_part_way_through_both_recordings_projected #10:44
+    Time.stubs(:now).returns(Time.new(2016,6,14,22,44))
+    data = Timer.new.calculate
+    assert_equal((1.0*1.0/60.0+2.0*3.0/60.0).round(2), data["projected_recording_gb"])
+  end
+
+  def test_time_part_way_through_both_recordings_projected #10:46
+    Time.stubs(:now).returns(Time.new(2016,6,14,22,46))
+    data = Timer.new.calculate
+    assert_equal((2.0*1.0/60.0).round(2), data["projected_recording_gb"])
+  end
+
+  def test_time_after_all_recordings #Next day
+    Time.stubs(:now).returns(Time.new(2016,6,15,22,46))
+    data = Timer.new.calculate
+    assert_equal((0.0).round(2), data["projected_recording_gb"])
+  end
+
+  ### Test that time projected can be calculated
+
+  ### Test that current recorded time can also be calculated
+
+  ### Test that changes in recording status cause the return of update true.
+
+  ### Test that no changes result in no update
+
+  ### Test that update can be triggered by time span in minutes.  Test for various time intervals that it will cause a update...
+
 end
