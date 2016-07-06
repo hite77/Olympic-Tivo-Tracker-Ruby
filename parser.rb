@@ -43,7 +43,7 @@ class Parser
     end # while true do
     @h
   end # parse method
-  
+
   def findPieceOfString(string,b,e)
     if (string.index(b).nil? || string.index(e).nil?)
       result = nil

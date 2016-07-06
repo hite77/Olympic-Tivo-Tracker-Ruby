@@ -20,7 +20,7 @@ class TestTest < Test::Unit::TestCase
     Time.stubs(:now).returns(Time.new(2016,6,14,22,43))
     Timer.new.calculate
     assert_true(File.foreach("output.txt").grep(/Channel1 -- Recording -- ending at 2016-06-14 22:45:00 -0400:0.05 hours/).any?)
-    assert_true(File.foreach("output.txt").grep(/Channel2 -- Recording -- ending at 2016-06-14 22:47:00 -0400:0.016666666666666666 hours/).any?)
+    assert_true(File.foreach("output.txt").grep(/Channel2 -- Recording -- ending at 2016-06-14 22:47:00 -0400:0.02 hours/).any?)
   end
 
   def test_time_after_recording_will_not_show_that_it_is_recording
@@ -71,8 +71,7 @@ class TestTest < Test::Unit::TestCase
     data = Timer.new.calculate
     assert_equal((1.0*1.0/60.0+2.0*3.0/60.0).round(2), data["projected_recording_gb"])
   end
-
-  def test_time_part_way_through_both_recordings_projected #10:46
+  def test_time_part_way_through_one_recording_projected #10:46
     Time.stubs(:now).returns(Time.new(2016,6,14,22,46))
     data = Timer.new.calculate
     assert_equal((2.0*1.0/60.0).round(2), data["projected_recording_gb"])
@@ -84,14 +83,42 @@ class TestTest < Test::Unit::TestCase
     assert_equal((0.0).round(2), data["projected_recording_gb"])
   end
 
-  ### Test that time projected can be calculated
+  def test_time_in_seconds_for_projected_can_be_calculated
+    Time.stubs(:now).returns(Time.new(2015,4,13,10,15))
+    data = Timer.new.calculate
+    assert_equal(10*60, data["projected_recording_seconds"])
+  end
 
-  ### Test that current recorded time can also be calculated
+  def test_time_in_seconds_when_only_partial_recordings_can_be_calculated
+    Time.stubs(:now).returns(Time.new(2016,6,14,22,43))
+    data = Timer.new.calculate
+    seconds_representing_six_minutes = 6*60
+    assert_equal(seconds_representing_six_minutes, data["projected_recording_seconds"])
+  end
 
-  ### Test that changes in recording status cause the return of update true.
+  def test_change_in_recording_status_cause_return_of_update_true
+    Time.stubs(:now).returns(Time.new(2016,6,14,22,43))
+    Timer.new.calculate
+    Time.stubs(:now).returns(Time.new(2016,6,14,22,46))
+    data = Timer.new.calculate
+    assert_true(data["perform_update"])
+  end
 
-  ### Test that no changes result in no update
+  def test_that_no_changes_result_in_no_update
+    Time.stubs(:now).returns(Time.new(2016,6,14,22,40))
+    Timer.new.calculate
+    Time.stubs(:now).returns(Time.new(2016,6,14,22,41))
+    data = Timer.new.calculate
+    assert_false(data["perform_update"])
+  end
 
-  ### Test that update can be triggered by time span in minutes.  Test for various time intervals that it will cause a update...
-
+  def test_that_after_fifteen_minutes_the_update_will_occur
+    Time.stubs(:now).returns(Time.new(2014,5,15,19,30))
+    data = Timer.new.calculate
+    assert_true(data["perform_update"])
+    Time.stubs(:now).returns(Time.new(2014,5,15,19,46))
+    data = Timer.new.calculate
+    `cat lastupdate.json`
+    assert_true(data["perform_update"])
+  end
 end
