@@ -37,9 +37,8 @@ class Timer
         @result["projected_recording_gb"] += time_in_seconds/60/60*gb_per_hour
         @result["projected_recording_seconds"] += time_in_seconds
         @result["current_recording_gb"] += hours * gb_per_hour
-        hours = hours.round(2)
         open('output.txt', 'a') { |f|
-          line = "#{channel} -- Recording -- ending at #{recording_time_end}:#{hours} hours"
+          line = "#{channel} -- Recording -- ending at #{recording_time_end}:#{hours.round(2)} hours"
   	  f.puts line
           this_run << line.split("-0400:")[0]
 	}
@@ -47,35 +46,27 @@ class Timer
     }
     @result["projected_recording_gb"] = @result["projected_recording_gb"].round(2)
     @result["current_recording_gb"] = @result["current_recording_gb"].round(2)
-    update = false
-    if File.exist?("lastupdate.json")
-      last_update = JSON.parse(File.read('lastupdate.json'))
-      if t-Time.parse(last_update["last_update"]) > 15*60
-        update = true
-      end
-    else
-      update = true
-    end
-    if (!(last_run == this_run) or update)
-	@result["perform_update"] = true
-        last_update = {}
-        last_update["last_update"] = t
-        File.open('lastupdate.json', 'w') { |fo| fo.puts last_update.to_json }
-    else
-        @result["perform_update"] = false
-    end
+    update_when_results_change_or_fifteen_minutes_pass(t, !(last_run==this_run))
     @result
   end
 
+  def update_when_results_change_or_fifteen_minutes_pass(current_time, difference_in_runs)
+    update = true
+    if File.exist?("lastupdate.json")
+      last_update = JSON.parse(File.read('lastupdate.json'))
+      if current_time-Time.parse(last_update["last_update"]) < 15*60
+        update = false
+      end
+    end
+    if (difference_in_runs or update)
+	@result["perform_update"] = true
+        File.open('lastupdate.json', 'w') { |fo| fo.puts Hash["last_update",current_time].to_json }
+    else
+        @result["perform_update"] = false
+    end
+  end
+
   def convert_string_time_to_time(item,start_index)
-     hour = item[start_index+1].split(":")[0].to_i
-     minute = item[start_index+1].split(":")[1].to_i
-     if (item[start_index+1].split(" ")[1] == "PM")
-       hour = hour + 12
-     end
-     year = item[start_index].split("/")[0].to_i
-     month = item[start_index].split("/")[1].to_i
-     day = item[start_index].split("/")[2].to_i
-     Time.new(year,month,day,hour,minute)
+     Time.parse(item[start_index].to_s+" "+item[start_index+1].to_s)
   end
 end
