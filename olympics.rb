@@ -1,18 +1,50 @@
 #!/usr/bin/ruby -w
-require_relative "parser.rb"
+require_relative 'parser.rb'
+require_relative 'time.rb'
 
-password=`cat pass.txt`.chomp
+@lastdata = {}
+@current_recording_gb
+@projected_recording_gb
+@projected_recording_seconds
+@password=`cat pass.txt`.chomp
 
-parser = Parser.new
-first_run = parser.parse(`curl --digest -k "https://tivo:#{password}@192.168.50.146/nowplaying/index.html"`)
+def update
+  data = Timer.new.calculate
+  @current_recording_gb=data["current_recording_gb"]
+  @projected_recording_gb=data["projected_recording_gb"]
+  @projected_recording_seconds=data["projected_recording_seconds"]
+  if data["perform_update"]
+    open('output.txt', 'a') { |f| f.puts "Updating at:"+Time.now.to_s}
+    @lastdata=update_data(@password)
+    File.open('tivo_contents.json', 'w') { |fo| fo.puts @lastdata.to_json }
+  else
+    @lastdata=JSON.parse(File.read('tivo_contents.json'))
+  end
+end
 
-data = {}
-first_run["folders"].each { |folder| data = parser.parse(`curl --digest -k "https://tivo:#{password}@192.168.50.146/nowplaying/#{folder}"`) }
+def update_data(password)
+  parser = Parser.new
+  first_run = parser.parse(`curl --digest -k "https://tivo:#{password}@192.168.50.146/nowplaying/index.html"`)
 
-puts data["title"]
-sizes = data["size"]
-total =  sizes.inject(0.0){|sum,x| sum + x }
-puts "total"
-puts total
-puts "percent no external drive"
-puts total / 884.1460701 * 100.0
+  data = {}
+  first_run["folders"].each { |folder| data = parser.parse(`curl --digest -k "https://tivo:#{password}@192.168.50.146/nowplaying/#{folder}"`) }
+  data
+end
+
+update
+
+open('output.txt', 'a') { |f|
+sizes = @lastdata["size"]
+total =  sizes.inject(0.0){|sum,x| sum + x }+@current_recording_gb
+f.puts "total"
+f.puts total
+f.puts "percent no external drive"
+f.puts (total / 884.1460701 * 100.0).round(0)
+projected_size = total + @projected_recording_gb
+f.puts "projected total"
+f.puts projected_size
+f.puts "percent projected"
+f.puts (projected_size / 884.1460701 * 100.0).round(0)
+f.puts "Projected time"
+f.puts Time.at(@projected_recording_seconds).utc.strftime("%H:%M:%S")
+}

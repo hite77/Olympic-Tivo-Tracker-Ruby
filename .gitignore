@@ -7,3 +7,5 @@ backup_averages.json
 backup_test.csv
 lastupdate.json
 test.csv
+recording_status.txt
+tivo_contents.json

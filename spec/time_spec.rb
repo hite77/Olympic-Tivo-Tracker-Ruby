@@ -105,7 +105,9 @@ class TestTest < Test::Unit::TestCase
   end
 
   def test_that_no_changes_result_in_no_update
-    Time.stubs(:now).returns(Time.new(2016,6,14,22,40))
+    Time.stubs(:now).returns(Time.new(2016,6,14,22,40,10))
+    Timer.new.calculate
+    Time.stubs(:now).returns(Time.new(2016,6,14,22,40,15))
     Timer.new.calculate
     Time.stubs(:now).returns(Time.new(2016,6,14,22,41))
     data = Timer.new.calculate
@@ -118,7 +120,14 @@ class TestTest < Test::Unit::TestCase
     assert_true(data["perform_update"])
     Time.stubs(:now).returns(Time.new(2014,5,15,19,46))
     data = Timer.new.calculate
-    `cat lastupdate.json`
     assert_true(data["perform_update"])
+  end
+
+  def test_that_no_change_with_two_recordings_works
+    Time.stubs(:now).returns(Time.new(2016,6,14,22,43))
+    Timer.new.calculate
+    Time.stubs(:now).returns(Time.new(2016,6,14,22,44))
+    data = Timer.new.calculate
+    assert_false(data["perform_update"])
   end
 end

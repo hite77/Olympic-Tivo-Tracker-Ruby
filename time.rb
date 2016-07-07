@@ -14,10 +14,12 @@ class Timer
     t = Time.now
     last_run = []
     this_run = []
-    File.open('output.txt').each do |line|
-      line = line.split("-0400:")[0]
-      last_run << line
+    if File.exist?("recording_status.txt")
+      File.open('recording_status.txt').each do |line|
+        last_run << line.strip
+      end
     end
+    File.open('recording_status.txt', 'w') {}
     File.open('output.txt', 'w') {}
     recordings = CSV.read("test.csv", converters: :numeric)
     recordings = recordings[2..-1]
@@ -40,8 +42,9 @@ class Timer
         open('output.txt', 'a') { |f|
           line = "#{channel} -- Recording -- ending at #{recording_time_end}:#{hours.round(2)} hours"
   	  f.puts line
-          this_run << line.split("-0400:")[0]
+          this_run << line.split("-0400:")[0].strip
 	}
+        open('recording_status.txt', 'a') { |f| f.puts "#{channel} -- Recording -- ending at #{recording_time_end}:cut".split("-0400:")[0].strip }
       end
     }
     @result["projected_recording_gb"] = @result["projected_recording_gb"].round(2)
