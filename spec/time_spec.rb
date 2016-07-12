@@ -19,15 +19,15 @@ class TestTest < Test::Unit::TestCase
   def test_time_during_recording_will_show_that_it_is_recording
     Time.stubs(:now).returns(Time.new(2016,6,14,22,43))
     Timer.new.calculate
-    assert_true(File.foreach("output.txt").grep(/Channel1 -- Recording -- ending at 2016-06-14 22:45:00 -0400:0.05 hours/).any?)
-    assert_true(File.foreach("output.txt").grep(/Channel2 -- Recording -- ending at 2016-06-14 22:47:00 -0400:0.02 hours/).any?)
+    assert_true(File.foreach("output.txt").grep(/Channel1 -- Recording -- ending at 2016-06-14 22:45:00 -0400:00:02:00 left/).any?)
+    assert_true(File.foreach("output.txt").grep(/Channel2 -- Recording -- ending at 2016-06-14 22:47:00 -0400:00:04:00 left/).any?)
   end
 
   def test_time_after_recording_will_not_show_that_it_is_recording
     Time.stubs(:now).returns(Time.new(2016,7,14,10,22))
     Timer.new.calculate
-    assert_false(File.foreach("output.txt").grep(/Recording Start:22:40/).any?)
-    assert_false(File.foreach("output.txt").grep(/Recording Start:22:43/).any?)
+    assert_false(File.foreach("output.txt").grep(/Channel1 -- Recording -- ending at 2016-06-14 22:45/).any?)
+    assert_false(File.foreach("output.txt").grep(/Channel2 -- Recroding -- ending at 2016-06-14 22:47/).any?)
   end
 
   def test_time_current_recording_works_when_time_is_in_middle_of_all_recordings

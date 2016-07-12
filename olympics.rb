@@ -33,18 +33,22 @@ end
 
 update
 
+size_in_gb_hard_drive=1823.17755681818
+
 open('output.txt', 'a') { |f|
 sizes = @lastdata["size"]
 total =  sizes.inject(0.0){|sum,x| sum + x }+@current_recording_gb
 f.puts "total"
 f.puts total
-f.puts "percent no external drive"
-f.puts (total / 884.1460701 * 100.0).round(0)
+f.puts "percent external drive"
+f.puts (total / size_in_gb_hard_drive * 100.0)
+#f.puts (total / 884.1460701 * 100.0)#.round(0)
+f.puts (total / size_in_gb_hard_drive * 100.0).round(0)
 projected_size = total + @projected_recording_gb
 f.puts "projected total"
 f.puts projected_size
 f.puts "percent projected"
-f.puts (projected_size / 884.1460701 * 100.0).round(0)
+f.puts (projected_size / size_in_gb_hard_drive * 100.0)#.round(0)
 f.puts "Projected time"
 f.puts Time.at(@projected_recording_seconds).utc.strftime("%H:%M:%S")
 }

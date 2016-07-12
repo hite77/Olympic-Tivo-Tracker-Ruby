@@ -40,8 +40,8 @@ class Timer
         @result["projected_recording_seconds"] += time_in_seconds
         @result["current_recording_gb"] += hours * gb_per_hour
         open('output.txt', 'a') { |f|
-          line = "#{channel} -- Recording -- ending at #{recording_time_end}:#{hours.round(2)} hours"
-  	  f.puts line
+          line = "#{channel} -- Recording -- ending at #{recording_time_end}:#{Time.at(recording_time_end-t).utc.strftime('%H:%M:%S')} left"
+	  f.puts line
           this_run << line.split("-0400:")[0].strip
 	}
         open('recording_status.txt', 'a') { |f| f.puts "#{channel} -- Recording -- ending at #{recording_time_end}:cut".split("-0400:")[0].strip }
