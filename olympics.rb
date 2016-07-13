@@ -24,10 +24,11 @@ end
 
 def update_data(password)
   parser = Parser.new
-  first_run = parser.parse(`curl --digest -k "https://tivo:#{password}@192.168.50.146/nowplaying/index.html"`)
 
-  data = {}
-  first_run["folders"].each { |folder| data = parser.parse(`curl --digest -k "https://tivo:#{password}@192.168.50.146/nowplaying/#{folder}"`) }
+  data = parser.parse(`curl --digest -k "https://tivo:#{password}@192.168.50.146/nowplaying/index.html"`)
+  if !data["folders"].nil?
+    data["folders"].each { |folder| data = parser.parse(`curl --digest -k "https://tivo:#{password}@192.168.50.146/nowplaying/#{folder}"`) }
+  end
   data
 end
 
