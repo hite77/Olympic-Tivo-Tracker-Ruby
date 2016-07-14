@@ -29,18 +29,18 @@ class Timer
       recording_time_end = convert_string_time_to_time(item,2)
       channel = item[4]
       gb_per_hour = averager.retrieve(channel)
+      full_size_of_recording_in_gb = (recording_time_end-recording_time_start)/60/60*gb_per_hour
       if t < recording_time_start
         time_in_seconds = (recording_time_end-recording_time_start)
         @result["projected_recording_seconds"] += time_in_seconds
-        @result["projected_recording_gb"] += (time_in_seconds)/60/60*gb_per_hour
+        @result["projected_recording_gb"] += full_size_of_recording_in_gb
       elsif t.between?(recording_time_start, recording_time_end)
-        hours = (t-recording_time_start)/60/60
-        time_in_seconds = (recording_time_end-t)
-        @result["projected_recording_gb"] += time_in_seconds/60/60*gb_per_hour
-        @result["projected_recording_seconds"] += time_in_seconds
-        @result["current_recording_gb"] += hours * gb_per_hour
+        time_left_in_seconds = (recording_time_end-t)
+	@result["projected_recording_gb"] += full_size_of_recording_in_gb
+        @result["projected_recording_seconds"] += time_left_in_seconds
+        @result["current_recording_gb"] += full_size_of_recording_in_gb
         open('output.txt', 'a') { |f|
-          line = "#{channel} -- Recording -- ending at #{recording_time_end}:#{Time.at(recording_time_end-t).utc.strftime('%H:%M:%S')} left"
+          line = "#{channel} -- Recording -- ending at #{recording_time_end}:#{Time.at(time_left_in_seconds).utc.strftime('%H:%M:%S')} left"
 	  f.puts line
           this_run << line.split("-0400:")[0].strip
 	}

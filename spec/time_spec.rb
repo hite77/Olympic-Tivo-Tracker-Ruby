@@ -33,7 +33,7 @@ class TestTest < Test::Unit::TestCase
   def test_time_current_recording_works_when_time_is_in_middle_of_all_recordings
     Time.stubs(:now).returns(Time.new(2016,6,14,22,43))
     data = Timer.new.calculate
-    assert_equal((1.0*(3.0/60.0)+2.0*(1.0/60.0)).round(2), data["current_recording_gb"])## 5 minutes Channel 1, 5 minutes Channel 2
+    assert_equal((1.0*(5.0/60.0)+2.0*(5.0/60.0)).round(2), data["current_recording_gb"])## 5 minutes Channel 1, 5 minutes Channel 2
   end
 
   def test_time_current_recording_works_when_time_is_before_all_recordings
@@ -45,7 +45,7 @@ class TestTest < Test::Unit::TestCase
   def test_time_current_recording_works_when_time_is_only_during_one_recording
     Time.stubs(:now).returns(Time.new(2016,6,14,22,46))
     data = Timer.new.calculate
-    assert_equal((2.0*(4.0/60.0)).round(2), data["current_recording_gb"])
+    assert_equal((2.0*(5.0/60.0)).round(2), data["current_recording_gb"])
   end
 
   def test_time_after_all_recordings_current_recording_should_be_zero
@@ -63,18 +63,19 @@ class TestTest < Test::Unit::TestCase
   def test_time_part_way_through_recording_one_projected #10:41
     Time.stubs(:now).returns(Time.new(2016,6,14,22,41))
     data = Timer.new.calculate
-    assert_equal((1.0*4.0/60.0+2.0*5.0/60.0).round(2), data["projected_recording_gb"])
+    assert_equal((1.0*5.0/60.0+2.0*5.0/60.0).round(2), data["projected_recording_gb"])
   end
 
   def test_time_part_way_through_both_recordings_projected #10:44
     Time.stubs(:now).returns(Time.new(2016,6,14,22,44))
     data = Timer.new.calculate
-    assert_equal((1.0*1.0/60.0+2.0*3.0/60.0).round(2), data["projected_recording_gb"])
+    assert_equal((1.0*5.0/60.0+2.0*5.0/60.0).round(2), data["projected_recording_gb"])
   end
+
   def test_time_part_way_through_one_recording_projected #10:46
     Time.stubs(:now).returns(Time.new(2016,6,14,22,46))
     data = Timer.new.calculate
-    assert_equal((2.0*1.0/60.0).round(2), data["projected_recording_gb"])
+    assert_equal((2.0*5.0/60.0).round(2), data["projected_recording_gb"])
   end
 
   def test_time_after_all_recordings #Next day
