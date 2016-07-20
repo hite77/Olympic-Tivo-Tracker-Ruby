@@ -42,14 +42,19 @@ total =  sizes.inject(0.0){|sum,x| sum + x }+@current_recording_gb
 f.puts "total"
 f.puts total
 f.puts "percent external drive"
-f.puts (total / size_in_gb_hard_drive * 100.0)
+partial_round = (total / size_in_gb_hard_drive * 100.0).round(1)
+f.puts partial_round
 #f.puts (total / 884.1460701 * 100.0)#.round(0)
-f.puts (total / size_in_gb_hard_drive * 100.0).round(0)
+f.puts "percent"
+f.puts partial_round.round(0)
 projected_size = total + @projected_recording_gb
 f.puts "projected total"
 f.puts projected_size
 f.puts "percent projected"
 f.puts (projected_size / size_in_gb_hard_drive * 100.0)#.round(0)
 f.puts "Projected time"
-f.puts Time.at(@projected_recording_seconds).utc.strftime("%H:%M:%S")
+hours = (@projected_recording_seconds/60.0/60.0).floor
+minutes = ((@projected_recording_seconds-hours*60.0*60.0)/60.0).floor
+seconds = (@projected_recording_seconds-hours*60.0*60.0-minutes*60.0).floor
+f.puts "#{hours}:#{minutes}:#{seconds}"
 }
