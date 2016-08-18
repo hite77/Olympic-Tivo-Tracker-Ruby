@@ -14,6 +14,8 @@ class Timer
     t = Time.now
     last_run = []
     this_run = []
+    record_count = 0
+    todo_capacity = 0
     if File.exist?("recording_status.txt")
       File.open('recording_status.txt').each do |line|
         last_run << line.strip
@@ -35,8 +37,11 @@ class Timer
         @result["projected_recording_seconds"] += time_in_seconds
         @result["projected_recording_gb"] += full_size_of_recording_in_gb
       elsif t.between?(recording_time_start, recording_time_end)
+        if (item[5] != "Yes") 
+          record_count += 1
+        end
         time_left_in_seconds = (recording_time_end-t)
-	@result["projected_recording_gb"] += full_size_of_recording_in_gb
+	      @result["projected_recording_gb"] += full_size_of_recording_in_gb
         @result["projected_recording_seconds"] += time_left_in_seconds
         @result["current_recording_gb"] += full_size_of_recording_in_gb
         open('output.txt', 'a') { |f|
@@ -45,10 +50,17 @@ class Timer
           this_run << line.split("-0400:")[0].strip
 	}
         open('recording_status.txt', 'a') { |f| f.puts "#{channel} -- Recording -- ending at #{recording_time_end}:cut".split("-0400:")[0].strip }
+      elsif (item[5] != "Yes")
+          record_count += 1
+          todo_capacity += full_size_of_recording_in_gb
       end
     }
+    if (record_count > 49)
+      @result["current_recording_gb"] += todo_capacity
+    end
     @result["projected_recording_gb"] = @result["projected_recording_gb"].round(2)
     @result["current_recording_gb"] = @result["current_recording_gb"].round(2)
+    @result["todo_recorded"] = record_count
     update_when_results_change_or_fifteen_minutes_pass(t, !(last_run==this_run))
     @result
   end

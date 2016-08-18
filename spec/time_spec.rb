@@ -131,4 +131,18 @@ class TestTest < Test::Unit::TestCase
     data = Timer.new.calculate
     assert_false(data["perform_update"])
   end
+
+  def test_more_than_50_has_count_of_how_many_recorded_not_counting_ones_watched
+    FileUtils.cp('spec/over_50.csv', 'test.csv')
+    Time.stubs(:now).returns(Time.new(2016,8,17,21,42))
+    data = Timer.new.calculate
+    assert_equal(101, data["todo_recorded"])
+  end
+  
+  def test_more_than_50_has_current_recording_gb_updated
+    FileUtils.cp('spec/over_50.csv', 'test.csv')
+    Time.stubs(:now).returns(Time.new(2016,8,17,21,42))
+    data = Timer.new.calculate
+    assert_equal((336.38).round(2), data["current_recording_gb"])
+  end
 end

@@ -8,39 +8,43 @@ class Parser
   end
 
   def parse(html_data)
-    html_data.gsub! '&quot;', '"'
-    html_data.gsub! '&amp;', '&'
-    while true do
-      line = findPieceOfString(html_data,"<tr ","</tr>")
-      folder = findPieceOfString(line,"<a href=\"","\">folder</a>")
-      if folder.nil?
-        title = findPieceOfString(line,"<b>","</b>")
-        if !title.nil? && findPieceOfString(line,"<i>","</i>") != "Recording" && !line[":80/images/suggestion-recording.png"]
-          if @h["title"].nil?
-            @h["title"] = Array.new
-            @h["description"] = Array.new
-            @h["channels"] = Array.new
-            @h["size"] = Array.new
+    if !html_data.index("50 items").nil?
+      @h["size"] = Array.new
+    else  
+      html_data.gsub! '&quot;', '"'
+      html_data.gsub! '&amp;', '&'
+      while true do
+        line = findPieceOfString(html_data,"<tr ","</tr>")
+        folder = findPieceOfString(line,"<a href=\"","\">folder</a>")
+        if folder.nil?
+          title = findPieceOfString(line,"<b>","</b>")
+          if !title.nil? && findPieceOfString(line,"<i>","</i>") != "Recording" && !line[":80/images/suggestion-recording.png"]
+            if @h["title"].nil?
+              @h["title"] = Array.new
+              @h["description"] = Array.new
+              @h["channels"] = Array.new
+              @h["size"] = Array.new
+            end
+            @h["title"] << title
+            @h["description"] << findPieceOfString(line,"<br>","</td>")
+            channel =  findPieceOfString(line,"alt=\"","\">")
+            @h["channels"] << channel
+            addSizeOfRecording(line, channel)
+          end # if !title.nil
+        else
+          if !line[":80/images/suggestions-in-progress-folder.png"]
+            if @h["folders"].nil?
+              @h["folders"] = Array.new
+            end
+            @h["folders"] << folder
           end
-          @h["title"] << title
-          @h["description"] << findPieceOfString(line,"<br>","</td>")
-          channel =  findPieceOfString(line,"alt=\"","\">")
-          @h["channels"] << channel
-          addSizeOfRecording(line, channel)
-        end # if !title.nil
-      else
-        if !line[":80/images/suggestions-in-progress-folder.png"]
-          if @h["folders"].nil?
-            @h["folders"] = Array.new
-          end
-          @h["folders"] << folder
         end
-      end
-      html_data = html_data[html_data.index("</tr>")+5..-1]
-      if html_data.index("</tr>").nil?
-        break;
-      end
-    end # while true do
+        html_data = html_data[html_data.index("</tr>")+5..-1]
+        if html_data.index("</tr>").nil?
+          break;
+        end
+      end # while true do
+    end # else
     @h
   end # parse method
 

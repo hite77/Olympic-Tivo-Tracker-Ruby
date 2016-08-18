@@ -10,6 +10,7 @@ require_relative 'time.rb'
 
 def update
   data = Timer.new.calculate
+  @todo_items_recorded=data["todo_recorded"]
   @current_recording_gb=data["current_recording_gb"]
   @projected_recording_gb=data["projected_recording_gb"]
   @projected_recording_seconds=data["projected_recording_seconds"]
@@ -57,4 +58,6 @@ hours = (@projected_recording_seconds/60.0/60.0).floor
 minutes = ((@projected_recording_seconds-hours*60.0*60.0)/60.0).floor
 seconds = (@projected_recording_seconds-hours*60.0*60.0-minutes*60.0).floor
 f.puts "#{hours}:#{minutes}:#{seconds}"
+f.puts "Recorded todo items left"
+f.puts  @todo_items_recorded
 }
