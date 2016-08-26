@@ -14,7 +14,7 @@ def update
   @current_recording_gb=data["current_recording_gb"]
   @projected_recording_gb=data["projected_recording_gb"]
   @projected_recording_seconds=data["projected_recording_seconds"]
-  if data["perform_update"]
+  if (data["perform_update"] || !File.exist?("tivo_contents.json"))
     open('output.txt', 'a') { |f| f.puts "Updating at:"+Time.now.to_s}
     @lastdata=update_data(@password)
     File.open('tivo_contents.json', 'w') { |fo| fo.puts @lastdata.to_json }
@@ -58,6 +58,6 @@ hours = (@projected_recording_seconds/60.0/60.0).floor
 minutes = ((@projected_recording_seconds-hours*60.0*60.0)/60.0).floor
 seconds = (@projected_recording_seconds-hours*60.0*60.0-minutes*60.0).floor
 f.puts "#{hours}:#{minutes}:#{seconds}"
-f.puts "Recorded todo items left"
+f.puts "Recorded todo items to be watched"
 f.puts  @todo_items_recorded
 }

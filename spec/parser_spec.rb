@@ -87,6 +87,13 @@ class TestParser < Test::Unit::TestCase
   def test_fifty_items_do_not_scan_will_be_handled_by_to_do_list
   	parser = Parser.new
   	data = parser.parse(@fifty_items)
-  	assert_equal({"size"=>[]}, data)
+  	assert_equal({}, data)
+  end
+
+  def test_two_parses_with_more_than_50_still_fets_size
+  	parser = Parser.new
+  	parser.parse(@one_recording_and_one_suggestion)
+    data = parser.parse(@fifty_items)
+    assert_equal([1.00], data["size"])
   end
 end

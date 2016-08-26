@@ -9,7 +9,7 @@ class Parser
 
   def parse(html_data)
     if !html_data.index("50 items").nil?
-      @h["size"] = Array.new
+      @h
     else  
       html_data.gsub! '&quot;', '"'
       html_data.gsub! '&amp;', '&'
